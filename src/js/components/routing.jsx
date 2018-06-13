@@ -7,7 +7,8 @@ import {
 import {Navigation} from "./navigation.jsx";
 import {NotFound} from "./_notFound.jsx";
 import {AddEvent} from "./_addEvent.jsx";
-import {WrappedRegistrationForm} from "./_test.jsx"
+import {Events} from "./_browseEvents.jsx"
+import {Home} from "./_home.jsx";
 
 class Routing extends React.Component{
 
@@ -16,9 +17,9 @@ class Routing extends React.Component{
             <div>
                 <Navigation/>
                 <Switch>
-                    {/*<Route exact path='/' component={Home}/>*/}
+                    <Route exact path='/' component={Home}/>
                     <Route path='/event' component={AddEvent}/>
-                    <Route path='/test' component={WrappedRegistrationForm}/>
+                    <Route path='/browse' component={Events}/>
                     <Route path='*' component={NotFound}/>
                 </Switch>
             </div>

@@ -1,37 +1,37 @@
 import React from "react";
 import DatePicker from "react-datepicker";
-import AddNewEvent from 'addNewEvent.js'
+import {EditIndexedDB} from "../scripts/editIndexedDb.js";
 
 import 'react-datepicker/dist/react-datepicker.css';
 import moment from 'moment';
 
-
 class OverallInfo extends React.Component {
+
     constructor(props){
+
         super(props);
         this.state ={
-            title: '',
-            org: '',
-            category: ''
-        }
+            tit: this.props.data ? this.props.data.tit : '',
+            org: this.props.data ? this.props.data.org : '',
+            cat: this.props.data ? this.props.data.cat : ''
+        };
+
     }
 
-    updateTitle=(e)=>{
-        this.setState({
-            title: e.target.value
-        })
+    updateState = (e, stateKey) => {
+
+        const temp = {};
+        temp[stateKey] = e.target.value;
+        this.setState(temp);
+
     };
 
-    updateOrg=(e)=>{
-        this.setState({
-            org: e.target.value
-        })
-    };
+    sendData = (e, dataKey) => {
 
-    updateCategory=(e)=>{
-        this.setState({
-            category: e.target.value
-        })
+        const temp = {};
+        temp[dataKey] = e.target.value;
+        this.props.collectData(temp);
+        
     };
 
     render() {
@@ -43,17 +43,19 @@ class OverallInfo extends React.Component {
         return <div className={'form-block__overall'}>
             <input type="text"
                    placeholder="Tytuł wydarzenia"
-                   value={this.state.title}
-                   onChange={this.updateTitle}
+                   value={this.state.tit}
+                   onChange={e => this.updateState(e, "tit") }
+                   onBlur={ e => this.sendData(e, "tit") }
             />
-
             <input type="text"
                    placeholder="Organizator"
                    value={this.state.org}
-                   onChange={this.updateOrg}
+                   onChange={e => this.updateState(e, "org") }
+                   onBlur={ e => this.sendData(e, "org") }
             />
-            <select value={this.state.category}
-                    onChange={this.updateCategory}
+            <select value={this.state.cat}
+                    onChange={e => this.updateState(e, "cat") }
+                    onBlur={ e => this.sendData(e, "cat") }
             >
                 {list}
             </select>
@@ -64,17 +66,36 @@ class OverallInfo extends React.Component {
 class Dates extends React.Component {
     constructor (props) {
         super(props);
+        let start = null;
+        let end = null;
+
+        if(this.props.data) {
+            start = this.parseDate(this.props.data.startDate);
+            end = this.parseDate(this.props.data.endDate);
+        }
+
         this.state = {
-            startDate: moment(),
-            endDate: moment()
+            startDate: start ? moment(start) : moment(),
+            endDate: end ? moment(end) : moment()
         };
     }
+
+    parseDate = (date) => {
+        const ar = date.split(/[- :]+/).map( e => {
+            return parseInt(e, 10)
+        });
+        const temp = ar[0];
+        ar[0] = ar[2];
+        ar[2] = temp;
+        ar[1]--;
+        return ar;
+    };
 
     updateStartDate=(date)=>{
         this.setState({
             startDate: date
         });
-        console.log(this.state.startDate.diff(moment(), 'days'));
+        //console.log(this.state.startDate.diff(moment(), 'days'));
     };
 
     updateEndDate=(date)=>{
@@ -83,15 +104,24 @@ class Dates extends React.Component {
         })
     };
 
+    sendDataStart=(e)=>{
+        this.props.collectData({'startDate': e.target.value})
+    };
+
+    sendDataEnd=(e)=>{
+        this.props.collectData({'endDate': e.target.value})
+    };
+
     render() {
         return <div className={'form-block__dates'}>
             <DatePicker
                 selected={this.state.startDate}
                 onChange={this.updateStartDate}
+                onBlur={this.sendDataStart}
                 showTimeSelect
-                timeFormat="HH:mm"
+                timeFormat="h:mm"
                 timeIntervals={15}
-                dateFormat="LLL"
+                dateFormat="D-MM-YYYY h:mm"
                 timeCaption="time"
                 locale="pl"
                 placeholderText="początek wydarzenia"
@@ -99,10 +129,11 @@ class Dates extends React.Component {
             <DatePicker
                 selected={this.state.endDate}
                 onChange={this.updateEndDate}
+                onBlur={this.sendDataEnd}
                 showTimeSelect
-                timeFormat="HH:mm"
+                timeFormat="h:mm"
                 timeIntervals={30}
-                dateFormat="LLL"
+                dateFormat="D-MM-YYYY h:mm"
                 timeCaption="time"
                 locale="pl"
                 placeholderText="koniec wydarzenia"
@@ -115,13 +146,18 @@ class Localization extends React.Component {
     constructor(props){
         super(props);
         this.state ={
-            loc: ''
+            loc: this.props.data ? this.props.data.loc : ''
         }
     }
+
     updateLoc=(e)=>{
         this.setState({
             loc: e.target.value
         })
+    };
+
+    sendData=(e)=>{
+        this.props.collectData({'loc': e.target.value})
     };
 
     render() {
@@ -130,6 +166,7 @@ class Localization extends React.Component {
                    placeholder="lokalizacja"
                    value={this.state.loc}
                    onChange={this.updateLoc}
+                   onBlur={this.sendData}
             />
         </div>
     }
@@ -139,14 +176,18 @@ class Description extends React.Component {
     constructor(props){
         super(props);
         this.state ={
-            desc: ''
+            des: this.props.data ? this.props.data.des : ''
         }
     }
 
     updateDesc=(e)=>{
         this.setState({
-            desc: e.target.value
+            des: e.target.value
         })
+    };
+
+    sendData=(e)=>{
+        this.props.collectData({'des': e.target.value})
     };
 
     render() {
@@ -155,9 +196,10 @@ class Description extends React.Component {
                       id=""
                       cols="30"
                       rows="10"
-                      value={this.state.desc}
+                      defaultValue={this.state.des}
                       onChange={this.updateDesc}
-            >sad</textarea>
+                      onBlur={this.sendData}
+            ></textarea>
         </div>
     }
 }
@@ -166,7 +208,7 @@ class Picture extends React.Component {
     constructor(props){
         super(props);
         this.state ={
-            pic: ''
+            pic: this.props.data ? this.props.data.pic : ''
         }
     }
 
@@ -176,25 +218,23 @@ class Picture extends React.Component {
         })
     };
 
+    sendData=(e)=>{
+        this.props.collectData({'pic': e.target.value})
+    };
+
     render() {
         return <div className={'form-block__picture'}>
             <input type="text"
-                      placeholder="adres zdjecia"
-                      value={this.state.pic}
-                      onChange={this.updatePic}
+                   placeholder="adres zdjecia"
+                   value={this.state.pic}
+                   onChange={this.updatePic}
+                   onBlur={this.sendData}
             />
         </div>
     }
 }
 
 class Submit extends React.Component {
-    constructor(props){
-        super(props);
-        this.state ={
-
-        }
-    }
-
     render() {
         return <div className={'form-block__button'}>
             <button type={'submit'}>Dodaj</button>
@@ -203,13 +243,64 @@ class Submit extends React.Component {
 }
 
 class Form extends React.Component{
+
+    validated =()=> {
+        return true
+    };
+
+    submitHandle = (e) => {
+        e.preventDefault();
+
+        if(this.validated()) {
+
+            const data = this.state;
+            const myEditIndexedDB = new EditIndexedDB();
+
+            if(this.props.data) {
+                data.id = this.props.data.id;
+                myEditIndexedDB.update(data.id, data);
+            } else {
+                data.id = new Date().valueOf();
+                myEditIndexedDB.add(data);
+            }
+
+        } else {
+            this.validated();
+        }
+    };
+
+    componentDidMount() {
+        if(this.props.data) this.collectData(this.props.data)
+    }
+    
+    collectData=(data)=>{
+        this.setState(data);
+    };
+
     render() {
-        return <form className={'add-event__form'} onSubmit={AddNewEvent()}>
-            <OverallInfo categories={['Muzyka', 'Sport', 'Kino', 'Sztuka', 'Nauka']} />
-            <Dates />
-            <Localization />
-            <Description />
-            <Picture />
+
+        return <form className={'add-event__form'} onSubmit={this.submitHandle}>
+            <OverallInfo
+                categories={['Muzyka', 'Sport', 'Kino', 'Sztuka', 'Nauka']}
+                collectData={this.collectData}
+                data={this.props.data}
+            />
+            <Dates
+                collectData={this.collectData}
+                data={this.props.data}
+            />
+            <Localization
+                collectData={this.collectData}
+                data={this.props.data}
+            />
+            <Description
+                collectData={this.collectData}
+                data={this.props.data}
+            />
+            <Picture
+                collectData={this.collectData}
+                data={this.props.data}
+            />
             <Submit />
         </form>
     }

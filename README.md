@@ -1,5 +1,5 @@
 
-* Tworzenie nowego wydarzenia. Wymagane informacje:
+* DONE Tworzenie nowego wydarzenia. Wymagane informacje:
     * tytuł wydarzenia,
     * opis wydarzenia,
     * nazwa organizatora,
@@ -7,12 +7,14 @@
     * data, początek - koniec (date picker),
     * zdjęcie wydarzenia (wystarczy link do obrazka, który jest hostowany na zewnątrz),
     * kategoria (do wyboru jedna z 5 dowolnych kategorii),
-* Wyświetlanie wszystkich utworzonych wydarzeń
+* DONE Wyświetlanie wszystkich utworzonych wydarzeń
 * Możliwość wyszukiwania po tytule i/lub lokalizacji
 Do wyboru: filtrowanie lub sortowanie (implementacja dowolna, im bardziej rozbudowana tym lepiej)
-* Usuwanie wydarzenia
-* Edycja wydarzenia
-* Zapisywanie stanu aplikacji w IndexedDB z przywróceniem stanu po otwarciu/odświeżeniu aplikacji 
+
+
+* DONE Usuwanie wydarzenia
+* DONE Edycja wydarzenia
+* DONE Zapisywanie stanu aplikacji w IndexedDB z przywróceniem stanu po otwarciu/odświeżeniu aplikacji 
 * GUI - nie oczekujemy cudów ale oczekujemy w miarę czystego i przejrzystego wyglądu
 * README uzupełnione o wszystkie potrzebne informacje do uruchomienia projektu.
 

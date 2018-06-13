@@ -3,7 +3,7 @@ import {Form} from './form.jsx';
 
 class AddEvent extends React.Component{
      render() {
-        return <Form/>
+         return <Form data={this.props.location.data}/>
     }
 }
 
