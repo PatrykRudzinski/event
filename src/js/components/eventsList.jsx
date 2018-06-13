@@ -6,7 +6,7 @@ class Event extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            redirect: false
+            redirect: false,
         }
     }
 
@@ -26,6 +26,18 @@ class Event extends React.Component {
 
     };
 
+    translateCategory = (cat) => {
+        const lib = {
+            Music: 'Muzyka',
+            Sport: 'Sport',
+            Cinema: 'Kino',
+            Art: 'Sztuka',
+            Science: 'Nauka'
+        };
+
+        return lib[cat];
+    };
+
     render(){
 
         if(this.state.redirect) {
@@ -38,6 +50,7 @@ class Event extends React.Component {
         return <div className={'event'}>
             <button onClick={e => this.deleteEvent(e, this.props.data.id)}>Usuń wydarzenie</button>
             <button onClick={e => this.updateEvent(e, this.props.data.id, this.props.data)}>Edytuj wydarzenie</button>
+            < br/>
             <img src={this.props.data.pic} alt=""/>
             <h2>{this.props.data.tit}</h2>
             <h3>{this.props.data.org}</h3>
@@ -45,7 +58,7 @@ class Event extends React.Component {
             <p>koniec: {this.props.data.endDate}</p>
             <p>{this.props.data.des}</p>
             <p>{this.props.data.loc}</p>
-            <p>{this.props.data.cat}</p>
+            <p>{this.translateCategory(this.props.data.cat)}</p>
             <p>do wydarzenia pozostalo....</p>
             <p>od wydarzenia dzieli Cie....</p>
         </div>
@@ -54,48 +67,142 @@ class Event extends React.Component {
 }
 
 class EventsList extends React.Component{
+
     constructor(props){
         super(props);
         this.events = new EditIndexedDB();
         this.events.read().then(res=>{this.setState({events: res})});
         this.state = {
-            events : null
+            events : null,
+            
+            searchCity: '',
+            searchTitle: '',
+            
+            filterMusic: true,
+            filterSport: true,
+            filterCinema: true,
+            filterArt: true,
+            filterScience: true
         }
     }
+
+    updateFilter = (e) => {
+        const temp = {};
+        temp[e.target.value] = !this.state[e.target.value];
+        this.setState(temp)
+    };
+
+    updateSearch = (e) => {
+        const temp = {};
+        temp[e.target.name] = e.target.value;
+        this.setState(temp)
+    };
+
     render() {
 
-        //Możliwość wyszukiwania po tytule i/lub lokalizacji
-        //Do wyboru: filtrowanie lub sortowanie (implementacja dowolna, im bardziej rozbudowana tym lepiej)
+        let list = null;
+        let listToRender = null;
 
-        const list = this.state.events && this.state.events.map((e)=>{
-            return <Event
-                key={e.id}
-                data = {{
-                    id : e.id,
-                    tit : e.tit,
-                    org : e.org,
-                    pic : e.pic,
-                    startDate : e.startDate,
-                    endDate : e.endDate,
-                    des : e.des,
-                    loc : e.loc,
-                    cat : e.cat,
-                }}
-            />
-        });
+        if(this.state.events) {
+            
+            list = this.state.events;
+            
+            if (this.state.searchTitle || this.state.searchCity) {
+                list = list
+                    .filter(e => {
+                        const ix = e.tit.toLowerCase().indexOf(this.state.searchTitle.toLowerCase());
+                        if(ix > -1) {
+                            e.indexTitle = ix;
+                            return true;
+                        }
+                    })
+                    .filter(e => {
+                        const ix = e.loc.toLowerCase().indexOf(this.state.searchCity.toLowerCase());
+                        if(ix > -1) {
+                            e.indexCity = ix;
+                            return true;
+                        }
+                    })
+                    .sort((a,b) => a.indexCity - b.indexCity)
+                    .sort((a,b) => a.indexTitle - b.indexTitle);
+            }
+
+            list = list.filter(e => {
+                const filter = `filter${e.cat}`;
+                if(this.state[filter]) return true;
+            });
+
+            listToRender = list.map((e) => {
+                    return <Event
+                        key={e.id}
+                        data={{
+                            id: e.id,
+                            tit: e.tit,
+                            org: e.org,
+                            pic: e.pic,
+                            startDate: e.startDate,
+                            endDate: e.endDate,
+                            des: e.des,
+                            loc: e.loc,
+                            cat: e.cat,
+                        }}
+                    />
+                });
+        }
 
         return <main>
             <section>
-                <form action="">
-                    <input type="text" placeholder='nazwa wydarzenia'/>
-                    <input type="text" placeholder='miasto'/>
-                </form>
+                <input type="text"
+                       name='searchTitle'
+                       placeholder='nazwa wydarzenia'
+                       value={this.state.searchTitle}
+                       onChange={this.updateSearch}
+                />
+                <input type="text"
+                       name='searchCity'
+                       placeholder='miasto'
+                       value={this.state.searchCity}
+                       onChange={this.updateSearch}
+                />
             </section>
             <section>
-                <div>sortuj</div>
-                <div>filtruj</div>
+                <input
+                    type="checkbox"
+                    name="category"
+                    value="filterMusic"
+                    checked={this.state.filterMusic}
+                    onChange={e => this.updateFilter(e)}
+                />Muzyka<br />
+                <input
+                    type="checkbox"
+                    name="category"
+                    value="filterSport"
+                    checked={this.state.filterSport}
+                    onChange={e => this.updateFilter(e)}
+                />Sport<br />
+                <input
+                    type="checkbox"
+                    name="category"
+                    value="filterCinema"
+                    checked={this.state.filterCinema}
+                    onChange={e => this.updateFilter(e)}
+                />Kino<br />
+                <input
+                    type="checkbox"
+                    name="category"
+                    value="filterArt"
+                    checked={this.state.filterArt}
+                    onChange={e => this.updateFilter(e)}
+                />Sztuka<br />
+                <input
+                    type="checkbox"
+                    name="category"
+                    value="filterScience"
+                    checked={this.state.filterScience}
+                    onChange={e => this.updateFilter(e)}
+                />Nauka<br />
             </section>
-                {list}
+                {listToRender}
         </main>
     }
 }

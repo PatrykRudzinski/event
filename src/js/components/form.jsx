@@ -13,7 +13,7 @@ class OverallInfo extends React.Component {
         this.state ={
             tit: this.props.data ? this.props.data.tit : '',
             org: this.props.data ? this.props.data.org : '',
-            cat: this.props.data ? this.props.data.cat : ''
+            cat: this.props.data ? this.props.data.cat : 'Muzyka'
         };
 
     }
@@ -36,28 +36,31 @@ class OverallInfo extends React.Component {
 
     render() {
 
-        const list = this.props.categories.map((el, i)=>{
-            return <option value={el} key={el+i}>{el}</option>
-        });
-
         return <div className={'form-block__overall'}>
             <input type="text"
                    placeholder="Tytuł wydarzenia"
                    value={this.state.tit}
                    onChange={e => this.updateState(e, "tit") }
                    onBlur={ e => this.sendData(e, "tit") }
+                   required
             />
             <input type="text"
                    placeholder="Organizator"
                    value={this.state.org}
                    onChange={e => this.updateState(e, "org") }
                    onBlur={ e => this.sendData(e, "org") }
+                   required
             />
             <select value={this.state.cat}
                     onChange={e => this.updateState(e, "cat") }
                     onBlur={ e => this.sendData(e, "cat") }
+                    required
             >
-                {list}
+                <option value="Music">Muzyka</option>
+                <option value="Sport">Sport</option>
+                <option value="Cinema">Kino</option>
+                <option value="Art">Sztuka</option>
+                <option value="Science">Nauka</option>
             </select>
         </div>
     }
@@ -75,9 +78,9 @@ class Dates extends React.Component {
         }
 
         this.state = {
-            startDate: start ? moment(start) : moment(),
-            endDate: end ? moment(end) : moment()
-        };
+            startDate: start ? moment(start) : null,
+            endDate: end ? moment(end) : null
+        }
     }
 
     parseDate = (date) => {
@@ -116,6 +119,8 @@ class Dates extends React.Component {
         return <div className={'form-block__dates'}>
             <DatePicker
                 selected={this.state.startDate}
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
                 onChange={this.updateStartDate}
                 onBlur={this.sendDataStart}
                 showTimeSelect
@@ -125,9 +130,12 @@ class Dates extends React.Component {
                 timeCaption="time"
                 locale="pl"
                 placeholderText="początek wydarzenia"
+                selectsStart
             />
             <DatePicker
                 selected={this.state.endDate}
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
                 onChange={this.updateEndDate}
                 onBlur={this.sendDataEnd}
                 showTimeSelect
@@ -137,6 +145,7 @@ class Dates extends React.Component {
                 timeCaption="time"
                 locale="pl"
                 placeholderText="koniec wydarzenia"
+                selectsEnd
             />
         </div>
     }
@@ -167,6 +176,7 @@ class Localization extends React.Component {
                    value={this.state.loc}
                    onChange={this.updateLoc}
                    onBlur={this.sendData}
+                   required
             />
         </div>
     }
@@ -199,6 +209,7 @@ class Description extends React.Component {
                       defaultValue={this.state.des}
                       onChange={this.updateDesc}
                       onBlur={this.sendData}
+                      required
             ></textarea>
         </div>
     }
@@ -229,6 +240,7 @@ class Picture extends React.Component {
                    value={this.state.pic}
                    onChange={this.updatePic}
                    onBlur={this.sendData}
+                   required
             />
         </div>
     }
@@ -281,7 +293,6 @@ class Form extends React.Component{
 
         return <form className={'add-event__form'} onSubmit={this.submitHandle}>
             <OverallInfo
-                categories={['Muzyka', 'Sport', 'Kino', 'Sztuka', 'Nauka']}
                 collectData={this.collectData}
                 data={this.props.data}
             />
