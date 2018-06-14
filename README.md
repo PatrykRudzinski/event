@@ -8,7 +8,7 @@
     * zdjęcie wydarzenia (wystarczy link do obrazka, który jest hostowany na zewnątrz),
     * kategoria (do wyboru jedna z 5 dowolnych kategorii),
 * DONE Wyświetlanie wszystkich utworzonych wydarzeń
-* Możliwość wyszukiwania po tytule i/lub lokalizacji
+* DONE Możliwość wyszukiwania po tytule i/lub lokalizacji
 Do wyboru: filtrowanie lub sortowanie (implementacja dowolna, im bardziej rozbudowana tym lepiej)
 
 

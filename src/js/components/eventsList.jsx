@@ -3,10 +3,12 @@ import {EditIndexedDB} from "../scripts/editIndexedDb.js";
 import {Redirect} from 'react-router-dom';
 
 class Event extends React.Component {
+
     constructor(props) {
+
         super(props);
         this.state = {
-            redirect: false,
+            redirect: false
         }
     }
 
@@ -14,19 +16,18 @@ class Event extends React.Component {
 
         const events = new EditIndexedDB();
         events.del(id)
-
     };
 
-    updateEvent = (e, id, data) => {
+    updateEvent = (e, data) => {
 
         this.setState({
             data: data,
             redirect: true
         });
-
     };
 
     translateCategory = (cat) => {
+
         const lib = {
             Music: 'Muzyka',
             Sport: 'Sport',
@@ -34,22 +35,22 @@ class Event extends React.Component {
             Art: 'Sztuka',
             Science: 'Nauka'
         };
-
         return lib[cat];
     };
 
     render(){
 
         if(this.state.redirect) {
+
             return <Redirect to={{
-                pathname: '/event',
+                pathname: '/newevent',
                 data: this.state.data
             }} />
         }
 
         return <div className={'event'}>
             <button onClick={e => this.deleteEvent(e, this.props.data.id)}>Usuń wydarzenie</button>
-            <button onClick={e => this.updateEvent(e, this.props.data.id, this.props.data)}>Edytuj wydarzenie</button>
+            <button onClick={e => this.updateEvent(e, this.props.data)}>Edytuj wydarzenie</button>
             < br/>
             <img src={this.props.data.pic} alt=""/>
             <h2>{this.props.data.tit}</h2>
@@ -57,7 +58,7 @@ class Event extends React.Component {
             <p>start: {this.props.data.startDate}</p>
             <p>koniec: {this.props.data.endDate}</p>
             <p>{this.props.data.des}</p>
-            <p>{this.props.data.loc}</p>
+            <p>{this.props.data.locCity}</p>
             <p>{this.translateCategory(this.props.data.cat)}</p>
             <p>do wydarzenia pozostalo....</p>
             <p>od wydarzenia dzieli Cie....</p>
@@ -143,10 +144,14 @@ class EventsList extends React.Component{
                             startDate: e.startDate,
                             endDate: e.endDate,
                             des: e.des,
-                            loc: e.loc,
+                            locCity: e.locCity,
+                            locStreet: e.locStreet,
                             cat: e.cat,
                         }}
+
                     />
+
+                //console.log(this.state.startDate.diff(moment(), 'days'));
                 });
         }
 
